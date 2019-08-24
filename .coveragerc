@@ -1,0 +1,4 @@
+[run]
+include = meta_rando/*
+omit = meta_rando/tests/*
+branch = 1

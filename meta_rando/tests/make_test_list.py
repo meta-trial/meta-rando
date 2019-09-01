@@ -5,7 +5,7 @@ import random
 from tempfile import mkdtemp
 
 
-default_drug_assignments = ["single_dose", "control"]
+default_drug_assignments = ["active", "placebo"]
 
 
 def make_test_list(

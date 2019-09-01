@@ -1,5 +1,5 @@
 from meta_sites import meta_sites, fqdn
-from meta_rando.constants import SINGLE_DOSE, CONTROL
+from meta_rando.constants import ACTIVE, PLACEBO
 from meta_rando.utils import get_drug_assignment
 from django.apps import apps as django_apps
 from edc_facility.import_holidays import import_holidays
@@ -45,7 +45,7 @@ class MetaTestCaseMixin(SiteTestCaseMixin):
             "meta_screening.subjectscreening", report_datetime=consent_datetime
         )
         consent = mommy.make_recipe(
-            "meta_subject.subjectconsent",
+            "meta_consent.subjectconsent",
             screening_identifier=subject_screening.screening_identifier,
             consent_datetime=consent_datetime,
             first_name=first_name,
@@ -53,12 +53,10 @@ class MetaTestCaseMixin(SiteTestCaseMixin):
         return consent.subject_identifier
 
     def get_subject_by_drug_assignment(self, drug_assignment):
-        RandomizationList = django_apps.get_model(
-            "meta_rando.randomizationlist")
+        RandomizationList = django_apps.get_model("meta_rando.randomizationlist")
         for _ in range(0, 4):
             subject_identifier = self.create_subject()
-            obj = RandomizationList.objects.get(
-                subject_identifier=subject_identifier)
+            obj = RandomizationList.objects.get(subject_identifier=subject_identifier)
             if (
                 get_drug_assignment({"drug_assignment": obj.drug_assignment})
                 == drug_assignment
@@ -67,7 +65,7 @@ class MetaTestCaseMixin(SiteTestCaseMixin):
         return None
 
     def get_single_dose_subject(self):
-        return self.get_subject_by_drug_assignment(SINGLE_DOSE)
+        return self.get_subject_by_drug_assignment(ACTIVE)
 
     def get_control_subject(self):
-        return self.get_subject_by_drug_assignment(CONTROL)
+        return self.get_subject_by_drug_assignment(PLACEBO)

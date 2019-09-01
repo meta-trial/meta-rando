@@ -22,8 +22,7 @@ def randomization_list_check(app_configs, **kwargs):
     ):
         error_msg = RandomizationListVerifier().message
         if error_msg:
-            errors.append(
-                error.cls(error_msg, hint=None, obj=None, id=error.id))
+            errors.append(error.cls(error_msg, hint=None, obj=None, id=error.id))
     if not settings.DEBUG:
         if settings.ETC_DIR not in settings.RANDOMIZATION_LIST_PATH:
             errors.append(

@@ -1,10 +1,6 @@
 RANDOMIZED = "RANDOMIZED"
 
-CONTROL = "control"
-CONTROL_NAME = (
-    "Control: "
-)
-SINGLE_DOSE = "single_dose"
-SINGLE_DOSE_NAME = (
-    "Single-dose: "
-)
+ACTIVE = "active"
+ACTIVE_NAME = "Active: "
+PLACEBO = "placebo"
+PLACEBO_NAME = "Placebo: "

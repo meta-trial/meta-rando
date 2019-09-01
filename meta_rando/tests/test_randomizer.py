@@ -4,16 +4,12 @@ from django.conf import settings
 from django.contrib.sites.models import Site
 from django.test import TestCase, tag
 from django.test.utils import override_settings
+from edc_randomization.randomization_list_importer import RandomizationListImporter
 from edc_registration.models import RegisteredSubject
 from random import shuffle
 from tempfile import mkdtemp
 
-from ..models import RandomizationList
-from ..randomization_list_importer import RandomizationListImporter
-from ..randomizer import RandomizationError, AllocationError
-from ..randomizer import Randomizer, RandomizationListError, AlreadyRandomized
 from ..utils import InvalidDrugAssignment
-from ..randomization_list_verifier import RandomizationListVerifier
 from .meta_test_case_mixin import MetaTestCaseMixin
 from .make_test_list import make_test_list
 from .models import SubjectConsent
@@ -31,8 +27,7 @@ class TestRandomizer(MetaTestCaseMixin, TestCase):
 
     @override_settings(SITE_ID=10)
     def test_with_consent_no_site(self):
-        subject_consent = SubjectConsent.objects.create(
-            subject_identifier="12345")
+        subject_consent = SubjectConsent.objects.create(subject_identifier="12345")
         self.assertRaises(
             RandomizationListError,
             Randomizer,
@@ -63,8 +58,7 @@ class TestRandomizer(MetaTestCaseMixin, TestCase):
         site = Site.objects.get_current()
         RandomizationList.objects.update(site_name=site.name)
         first_obj = RandomizationList.objects.all().first()
-        subject_consent = SubjectConsent.objects.create(
-            subject_identifier="12345")
+        subject_consent = SubjectConsent.objects.create(subject_identifier="12345")
         rando = Randomizer(
             subject_identifier=subject_consent.subject_identifier,
             report_datetime=subject_consent.consent_datetime,
@@ -78,8 +72,7 @@ class TestRandomizer(MetaTestCaseMixin, TestCase):
         self.populate_list()
         site = Site.objects.get_current()
         RandomizationList.objects.update(site_name=site.name)
-        subject_consent = SubjectConsent.objects.create(
-            subject_identifier="12345")
+        subject_consent = SubjectConsent.objects.create(subject_identifier="12345")
         Randomizer(
             subject_identifier=subject_consent.subject_identifier,
             report_datetime=subject_consent.consent_datetime,
@@ -90,8 +83,7 @@ class TestRandomizer(MetaTestCaseMixin, TestCase):
         rs = RegisteredSubject.objects.get(subject_identifier="12345")
         self.assertEqual(rs.subject_identifier, first_obj.subject_identifier)
         self.assertEqual(rs.sid, str(first_obj.sid))
-        self.assertEqual(rs.randomization_datetime,
-                         first_obj.allocated_datetime)
+        self.assertEqual(rs.randomization_datetime, first_obj.allocated_datetime)
 
     @override_settings(SITE_ID=10)
     def test_updates_list_obj_as_allocated(self):
@@ -99,8 +91,7 @@ class TestRandomizer(MetaTestCaseMixin, TestCase):
         site = Site.objects.get_current()
         RandomizationList.objects.update(site_name=site.name)
         RandomizationList.objects.all().first()
-        subject_consent = SubjectConsent.objects.create(
-            subject_identifier="12345")
+        subject_consent = SubjectConsent.objects.create(subject_identifier="12345")
         Randomizer(
             subject_identifier=subject_consent.subject_identifier,
             report_datetime=subject_consent.consent_datetime,
@@ -111,10 +102,8 @@ class TestRandomizer(MetaTestCaseMixin, TestCase):
         self.assertEqual(first_obj.subject_identifier, "12345")
         self.assertTrue(first_obj.allocated)
         self.assertIsNotNone(first_obj.allocated_user)
-        self.assertEqual(first_obj.allocated_user,
-                         subject_consent.user_modified)
-        self.assertEqual(first_obj.allocated_datetime,
-                         subject_consent.consent_datetime)
+        self.assertEqual(first_obj.allocated_user, subject_consent.user_modified)
+        self.assertEqual(first_obj.allocated_datetime, subject_consent.consent_datetime)
         self.assertGreater(first_obj.modified, subject_consent.created)
 
     @override_settings(SITE_ID=10)
@@ -123,8 +112,7 @@ class TestRandomizer(MetaTestCaseMixin, TestCase):
         site = Site.objects.get_current()
         RandomizationList.objects.update(site_name=site.name)
         first_obj = RandomizationList.objects.all().first()
-        subject_consent = SubjectConsent.objects.create(
-            subject_identifier="12345")
+        subject_consent = SubjectConsent.objects.create(subject_identifier="12345")
         rando = Randomizer(
             subject_identifier=subject_consent.subject_identifier,
             report_datetime=subject_consent.consent_datetime,
@@ -148,8 +136,7 @@ class TestRandomizer(MetaTestCaseMixin, TestCase):
         self.populate_list()
         site = Site.objects.get_current()
         RandomizationList.objects.update(site_name=site.name)
-        subject_consent = SubjectConsent.objects.create(
-            subject_identifier="12345")
+        subject_consent = SubjectConsent.objects.create(subject_identifier="12345")
         rando = Randomizer(
             subject_identifier=subject_consent.subject_identifier,
             report_datetime=subject_consent.consent_datetime,
@@ -174,8 +161,7 @@ class TestRandomizer(MetaTestCaseMixin, TestCase):
         self.populate_list()
         site = Site.objects.get_current()
         RandomizationList.objects.update(site_name=site.name)
-        subject_consent = SubjectConsent.objects.create(
-            subject_identifier="12345")
+        subject_consent = SubjectConsent.objects.create(subject_identifier="12345")
         rando = Randomizer(
             subject_identifier=subject_consent.subject_identifier,
             report_datetime=subject_consent.consent_datetime,
@@ -216,8 +202,7 @@ class TestRandomizer(MetaTestCaseMixin, TestCase):
                 site=subject_consent.site,
                 user=subject_consent.user_modified,
             )
-        self.assertEqual(cm.exception.code,
-                         "edc_registration.registeredsubject")
+        self.assertEqual(cm.exception.code, "edc_registration.registeredsubject")
 
     def test_subject_does_not_exist(self):
         self.populate_list()
@@ -290,13 +275,11 @@ class TestRandomizer(MetaTestCaseMixin, TestCase):
                 rs = RegisteredSubject.objects.get(
                     subject_identifier=obj.subject_identifier
                 )
-                self.assertEqual(obj.subject_identifier,
-                                 randomized_subjects[index][0])
+                self.assertEqual(obj.subject_identifier, randomized_subjects[index][0])
                 self.assertEqual(rs.sid, randomized_subjects[index][1])
 
         # clear out any unallocated
-        RandomizationList.objects.filter(
-            subject_identifier__isnull=True).delete()
+        RandomizationList.objects.filter(subject_identifier__isnull=True).delete()
 
         # assert raises on next attempt to randomize
         subject_consent = SubjectConsent.objects.create(
@@ -347,7 +330,7 @@ class TestRandomizer(MetaTestCaseMixin, TestCase):
         # change number of SIDs in DB
         RandomizationListImporter()
         RandomizationList.objects.create(
-            sid=100, drug_assignment="single_dose", site_name=site.name
+            sid=100, drug_assignment="active", site_name=site.name
         )
         self.assertEqual(RandomizationList.objects.all().count(), 41)
         message = RandomizationListVerifier().message

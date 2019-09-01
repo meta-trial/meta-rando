@@ -1,6 +1,6 @@
 from meta_sites import meta_sites
 
-from .constants import SINGLE_DOSE, CONTROL
+from .constants import ACTIVE, PLACEBO
 
 
 class InvalidDrugAssignment(Exception):
@@ -14,11 +14,11 @@ def get_drug_assignment(row):
     to a word.
     """
     drug_assignment = row["drug_assignment"]
-    if drug_assignment not in [SINGLE_DOSE, CONTROL]:
+    if drug_assignment not in [ACTIVE, PLACEBO]:
         if int(row["drug_assignment"]) == 2:
-            drug_assignment = SINGLE_DOSE
+            drug_assignment = ACTIVE
         elif int(row["drug_assignment"]) == 1:
-            drug_assignment = CONTROL
+            drug_assignment = PLACEBO
         else:
             raise InvalidDrugAssignment(
                 f"Invalid drug assignment. "
@@ -35,9 +35,9 @@ def get_allocation(row, drug_assignment):
     try:
         allocation = row["orig_allocation"]
     except KeyError:
-        if drug_assignment == SINGLE_DOSE:
+        if drug_assignment == ACTIVE:
             allocation = "2"
-        elif drug_assignment == CONTROL:
+        elif drug_assignment == PLACEBO:
             allocation = "1"
         else:
             raise InvalidDrugAssignment(
@@ -50,8 +50,7 @@ def get_site_name(long_name, row=None):
     """Returns the site name given the "long" site name.
     """
     try:
-        site_name = [site for site in meta_sites if site[2]
-                     == long_name][0][1]
+        site_name = [site for site in meta_sites if site[2] == long_name][0][1]
     except IndexError as e:
         raise IndexError(f"{long_name} not found. Got {e}. See {row}")
     return site_name
